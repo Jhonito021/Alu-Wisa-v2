@@ -1,37 +1,37 @@
-const CACHE_NAME = 'devis-track-v1';
+const CACHE_NAME = 'devis-track-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/bootstrap-4.0.0-dist/css/bootstrap.min.css',
-  '/bootstrap-4.0.0-dist/css/style.css',
   '/img/LogoAluWisa.png',
-  '/icon.svg',
+  '/apple-touch-icon.png',
   '/pwa-192.png',
   '/pwa-512.png',
+  '/bootstrap-4.0.0-dist/css/bootstrap.min.css',
+  '/bootstrap-4.0.0-dist/css/style.css',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
 ];
 
-// Install Event
+// Installation du Service Worker et mise en cache des ressources
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching app shell & assets');
+      console.log('[Service Worker] Pré-mise en cache de l\'App Shell');
       return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-        console.warn('[Service Worker] Some assets failed to pre-cache:', err);
+        console.warn('[Service Worker] Échec partiel du pré-cache:', err);
       });
     }).then(() => self.skipWaiting())
   );
 });
 
-// Activate Event
+// Activation et nettoyage des anciens caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            console.log('[Service Worker] Clearing old cache:', cache);
+            console.log('[Service Worker] Suppression de l\'ancien cache:', cache);
             return caches.delete(cache);
           }
         })
@@ -40,12 +40,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event
+// Interception des requêtes réseau (Offline Mode & Stale-while-revalidate)
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith('http')) return;
 
-  // API calls: Network first, fallback to cache
+  // Stratégie pour les appels API : Network First avec fallback sur le cache
   if (event.request.url.includes('/api/')) {
     event.respondWith(
       fetch(event.request)
@@ -63,10 +63,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static Assets: Cache first with network fallback
+  // Stratégie pour les fichiers statiques : Cache First avec mise à jour réseau en arrière-plan
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
+        // Rafraîchir le cache en arrière-plan
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {

@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "framework": "vite",
+  "routes": [
+    {
+      "src": "/sw.js",
+      "headers": {
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "content-type": "application/javascript"
+      },
+      "dest": "/sw.js"
+    },
+    {
+      "src": "/manifest.json",
+      "headers": {
+        "content-type": "application/manifest+json"
+      },
+      "dest": "/manifest.json"
+    }
+  ]
+}
