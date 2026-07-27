@@ -12,7 +12,6 @@ export const Header = ({ currentPage, setCurrentPage }) => {
   });
 
   useEffect(() => {
-    // Listen for PWA install prompt
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -66,7 +65,7 @@ export const Header = ({ currentPage, setCurrentPage }) => {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
-      console.log('L\'utilisateur a accepté l\'installation de la PWA');
+      console.log('PWA installée');
     }
     setDeferredPrompt(null);
   };
@@ -162,7 +161,7 @@ export const Header = ({ currentPage, setCurrentPage }) => {
                 className="btn btn-warning btn-sm font-weight-bold d-flex align-items-center"
                 onClick={handleInstallPWA}
                 style={{ gap: '6px', borderRadius: '20px', padding: '0.4rem 0.9rem' }}
-                title="Installer l'application DevisTrack sur votre appareil"
+                title="Installer DevisTrack sur votre écran d'accueil"
               >
                 <i className="fas fa-download"></i> Installer PWA
               </button>
