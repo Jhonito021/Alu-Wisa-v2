@@ -2,7 +2,10 @@ import initSqlJs from 'sql.js';
 import fs from 'fs';
 import path from 'path';
 
-const DB_FILE = path.join(process.cwd(), 'devis_data.sqlite');
+const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NOW_REGION;
+const DB_DIR = isServerless ? '/tmp' : process.cwd();
+const DB_FILE = path.join(DB_DIR, 'devis_data.sqlite');
+const SEED_FILE = path.join(process.cwd(), 'devis_data.sqlite');
 
 let dbInstance = null;
 
@@ -15,14 +18,23 @@ export async function initDatabase() {
     try {
       const fileBuffer = fs.readFileSync(DB_FILE);
       dbInstance = new SQL.Database(fileBuffer);
-      console.log('SQLite database loaded from file:', DB_FILE);
+      console.log('SQLite database loaded from:', DB_FILE);
     } catch (err) {
-      console.error('Failed to read existing SQLite database file, initializing new database:', err);
+      console.error('Failed to read existing DB file:', err);
+      dbInstance = new SQL.Database();
+    }
+  } else if (fs.existsSync(SEED_FILE)) {
+    try {
+      const seedBuffer = fs.readFileSync(SEED_FILE);
+      dbInstance = new SQL.Database(seedBuffer);
+      console.log('SQLite database loaded from seed:', SEED_FILE);
+    } catch (err) {
+      console.error('Failed to read seed DB file:', err);
       dbInstance = new SQL.Database();
     }
   } else {
     dbInstance = new SQL.Database();
-    console.log('Created new SQLite database in memory');
+    console.log('Created new SQLite database');
   }
 
   // Ensure tables exist
