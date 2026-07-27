@@ -4,6 +4,12 @@
   "description": "Calculateur de devis et gestion des commandes pour menuiserie aluminium",
   "icons": [
     {
+      "src": "/img/LogoAluWisa.png",
+      "sizes": "512x512 192x192 250x150",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
       "src": "/pwa-192.png",
       "type": "image/png",
       "sizes": "192x192",
@@ -14,16 +20,6 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
-    },
-    {
-      "src": "/icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any"
-    },
-    {
-      "src": "/img/LogoAluWisa.png",
-      "sizes": "250x150",
-      "type": "image/png"
     }
   ],
   "start_url": "/",
