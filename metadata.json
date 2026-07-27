@@ -1,0 +1,8 @@
+{
+  "name": "DevisTrack Express - Alu Wisa",
+  "description": "Calculs automatiques de devis et gestion de commandes de fenêtres et portes en aluminium pour Alu Wisa",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
