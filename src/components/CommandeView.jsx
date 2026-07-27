@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { generateDevisPDF } from '../utils/pdfGenerator';
 
 export const CommandeView = () => {
   const [clientInfo, setClientInfo] = useState({
@@ -9,6 +10,23 @@ export const CommandeView = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+
+  const handleExportOrderPDF = () => {
+    generateDevisPDF({
+      clientInfo: clientInfo,
+      devisId: Math.floor(Math.random() * 9000 + 1000),
+      title: "Bon de Commande & Devis - Alu WISA",
+      items: [{
+        designation: "Commande Sur Mesure Menuiserie",
+        dimensions: "Sur Mesure",
+        surface: "-",
+        profil_alu: "Standard",
+        type_vitre: "Sur mesure",
+        nombre: 1,
+        prixTotal: 0
+      }]
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,15 +60,23 @@ export const CommandeView = () => {
                     Adresse: {clientInfo.adresse || 'N/A'}<br />
                     Notes: {clientInfo.notes || 'Aucune note'}
                   </p>
-                  <button
-                    className="btn btn-outline-primary mt-3"
-                    onClick={() => {
-                      setSubmitted(false);
-                      setClientInfo({ nom: '', telephone: '', adresse: '', notes: '' });
-                    }}
-                  >
-                    Enregistrer une autre commande
-                  </button>
+                  <div className="d-flex justify-content-center align-items-center mt-4 flex-wrap" style={{ gap: '10px' }}>
+                    <button
+                      className="btn btn-primary btn-lg font-weight-bold"
+                      onClick={handleExportOrderPDF}
+                    >
+                      <i className="fas fa-file-pdf mr-2"></i> Télécharger le Bon de Commande PDF
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary btn-lg"
+                      onClick={() => {
+                        setSubmitted(false);
+                        setClientInfo({ nom: '', telephone: '', adresse: '', notes: '' });
+                      }}
+                    >
+                      Autre commande
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>

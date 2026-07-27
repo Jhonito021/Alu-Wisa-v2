@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { generateDevisPDF } from '../utils/pdfGenerator';
 
 export const FenetreView = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,28 @@ export const FenetreView = () => {
 
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [clientInfo, setClientInfo] = useState({ nom: '', telephone: '', adresse: '' });
+  const [showClientModal, setShowClientModal] = useState(false);
+
+  const handleExportPDF = () => {
+    if (!result) return;
+    generateDevisPDF({
+      clientInfo: clientInfo,
+      devisId: result.id || Math.floor(Math.random() * 9000 + 1000),
+      title: "Devis Estimatif - Fenêtre Aluminium",
+      items: [{
+        designation: `Fenêtre ${result.typeFenetre.toUpperCase()}`,
+        longueur: result.longueur,
+        largeur: result.largeur,
+        dimensions: `${result.longueur}m x ${result.largeur}m`,
+        surface: result.surface,
+        profil_alu: result.profilAlu,
+        type_vitre: result.typeVitre,
+        nombre: result.nombre,
+        prixTotal: result.prixTotal
+      }]
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,14 +102,19 @@ export const FenetreView = () => {
       };
 
       // Sauvegarde dans l'API backend
-      await fetch('/api/fenetres', {
+      let savedRecord = null;
+      const res = await fetch('/api/fenetres', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      if (res.ok) {
+        savedRecord = await res.json();
+      }
 
       setResult({
         ...payload,
+        id: savedRecord ? savedRecord.id : null,
         typeFenetre: formData.type_fenetre,
         typeVitre: formData.type_vitre,
         profilAlu: formData.profil_alu,
@@ -237,7 +265,9 @@ export const FenetreView = () => {
 
           {result && (
             <div className="alert alert-info mt-4 shadow-sm fade-in">
-              <h5 className="text-primary font-weight-bold mb-3">Résultat :</h5>
+              <h5 className="text-primary font-weight-bold mb-3">
+                <i className="fas fa-check-circle mr-2"></i> Résultat du Calcul :
+              </h5>
               <p className="mb-2">
                 Fenêtre <strong>{result.typeFenetre}</strong> avec vitre <strong>{result.typeVitre}</strong>
               </p>
@@ -256,9 +286,52 @@ export const FenetreView = () => {
               <p className="mb-2">
                 Quantités: <strong>{result.nombre}</strong>
               </p>
-              <p className="h4 text-success font-weight-bold mt-3 mb-0">
+              <p className="h4 text-success font-weight-bold mt-3 mb-3">
                 Prix estimé : {Math.round(result.prixTotal).toLocaleString('fr-FR')} Ar
               </p>
+
+              <hr />
+
+              <h6 className="font-weight-bold text-dark mb-2">
+                <i className="fas fa-user-edit mr-2"></i> Informations Client pour le Devis PDF :
+              </h6>
+              <div className="form-group mb-2">
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  placeholder="Nom du Client (ex: M. Rakoto)"
+                  value={clientInfo.nom}
+                  onChange={(e) => setClientInfo({ ...clientInfo, nom: e.target.value })}
+                />
+              </div>
+              <div className="form-row mb-3">
+                <div className="col">
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Téléphone (ex: 034 12 345 67)"
+                    value={clientInfo.telephone}
+                    onChange={(e) => setClientInfo({ ...clientInfo, telephone: e.target.value })}
+                  />
+                </div>
+                <div className="col">
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Adresse / Chantier"
+                    value={clientInfo.adresse}
+                    onChange={(e) => setClientInfo({ ...clientInfo, adresse: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-primary btn-block btn-lg font-weight-bold shadow-sm"
+                onClick={handleExportPDF}
+              >
+                <i className="fas fa-file-pdf mr-2"></i> Télécharger le Devis en PDF
+              </button>
             </div>
           )}
         </div>
