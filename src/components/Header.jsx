@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 export const Header = ({ currentPage, setCurrentPage }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
   const [timeState, setTimeState] = useState({
     h: '--',
     m: '--',
@@ -10,6 +12,21 @@ export const Header = ({ currentPage, setCurrentPage }) => {
   });
 
   useEffect(() => {
+    // Listen for PWA install prompt
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    const handleAppInstalled = () => {
+      setIsAppInstalled(true);
+      setDeferredPrompt(null);
+      console.log('PWA installée avec succès');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
     const updateTime = () => {
       const now = new Date();
       const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -37,8 +54,22 @@ export const Header = ({ currentPage, setCurrentPage }) => {
 
     updateTime();
     const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
+
+  const handleInstallPWA = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('L\'utilisateur a accepté l\'installation de la PWA');
+    }
+    setDeferredPrompt(null);
+  };
 
   const handleNavClick = (page) => {
     setCurrentPage(page);
@@ -124,6 +155,19 @@ export const Header = ({ currentPage, setCurrentPage }) => {
               <i className="fas fa-history"></i> Historique
             </a>
           </li>
+
+          {deferredPrompt && !isAppInstalled && (
+            <li className="nav-item ml-md-2">
+              <button
+                className="btn btn-warning btn-sm font-weight-bold d-flex align-items-center"
+                onClick={handleInstallPWA}
+                style={{ gap: '6px', borderRadius: '20px', padding: '0.4rem 0.9rem' }}
+                title="Installer l'application DevisTrack sur votre appareil"
+              >
+                <i className="fas fa-download"></i> Installer PWA
+              </button>
+            </li>
+          )}
         </ul>
 
         <div className="horloge">

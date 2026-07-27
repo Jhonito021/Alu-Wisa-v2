@@ -1,0 +1,35 @@
+{
+  "short_name": "DevisTrack",
+  "name": "Alu WISA - DevisTrack Express",
+  "description": "Calculateur de devis et gestion des commandes pour menuiserie aluminium",
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/img/LogoAluWisa.png",
+      "sizes": "250x150",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f2ece8",
+  "theme_color": "#1e3378",
+  "display": "standalone",
+  "orientation": "any",
+  "categories": ["utilities", "business", "productivity"]
+}

@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Alu WISA - DevisTrack Express</title>
+
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#1e3378" />
+    <meta name="description" content="Calculateur de devis et gestion de commandes pour menuiserie aluminium" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- iOS / Android PWA Support -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DevisTrack" />
+
+    <!-- CSS -->
     <link rel="stylesheet" href="/bootstrap-4.0.0-dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/bootstrap-4.0.0-dist/css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -11,5 +26,16 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => console.log('Service Worker enregistré avec succès:', reg.scope))
+            .catch((err) => console.error('Échec enregistrement Service Worker:', err));
+        });
+      }
+    </script>
   </body>
 </html>
