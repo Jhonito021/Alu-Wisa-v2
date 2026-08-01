@@ -1,76 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { generateDevisPDF } from '../utils/pdfGenerator';
 
 export const HistoriqueView = () => {
   const [fenetres, setFenetres] = useState([]);
   const [portes, setPortes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-
-  const handleExportFenetrePDF = (fenetre) => {
-    generateDevisPDF({
-      devisId: fenetre.id,
-      title: "Devis - Fenêtre Aluminium",
-      items: [{
-        designation: `Fenêtre ${fenetre.type_fenetre.toUpperCase()}`,
-        dimensions: `${fenetre.longueur}m x ${fenetre.largeur}m`,
-        surface: fenetre.surface,
-        profil_alu: fenetre.profil_alu,
-        type_vitre: fenetre.type_vitre,
-        nombre: fenetre.nombre,
-        prixTotal: fenetre.prix
-      }]
-    });
-  };
-
-  const handleExportPortePDF = (porte) => {
-    generateDevisPDF({
-      devisId: porte.id,
-      title: "Devis - Porte Aluminium",
-      items: [{
-        designation: `Porte ${porte.type_porte.toUpperCase()}`,
-        dimensions: `${porte.longueur}m x ${porte.largeur}m`,
-        surface: porte.surface,
-        profil_alu: porte.profil_alu,
-        type_vitre: porte.type_vitre,
-        nombre: porte.nombre,
-        prixTotal: porte.prix
-      }]
-    });
-  };
-
-  const handleExportAllPDF = () => {
-    const allItems = [
-      ...filteredFenetres.map(f => ({
-        designation: `Fenêtre ${f.type_fenetre.toUpperCase()} (#${f.id})`,
-        dimensions: `${f.longueur}m x ${f.largeur}m`,
-        surface: f.surface,
-        profil_alu: f.profil_alu,
-        type_vitre: f.type_vitre,
-        nombre: f.nombre,
-        prixTotal: f.prix
-      })),
-      ...filteredPortes.map(p => ({
-        designation: `Porte ${p.type_porte.toUpperCase()} (#${p.id})`,
-        dimensions: `${p.longueur}m x ${p.largeur}m`,
-        surface: p.surface,
-        profil_alu: p.profil_alu,
-        type_vitre: p.type_vitre,
-        nombre: p.nombre,
-        prixTotal: p.prix
-      }))
-    ];
-
-    if (allItems.length === 0) {
-      alert("Aucun devis disponible dans l'historique.");
-      return;
-    }
-
-    generateDevisPDF({
-      title: "Récapitulatif Général de l'Historique des Devis",
-      items: allItems
-    });
-  };
 
   const fetchData = async () => {
     try {
@@ -142,21 +76,13 @@ export const HistoriqueView = () => {
           <i className="fas fa-history text-primary mr-2"></i> Historique des Devis
         </h2>
         <div className="d-flex align-items-center" style={{ gap: '10px' }}>
-          <button
-            className="btn btn-danger d-flex align-items-center font-weight-bold"
-            onClick={handleExportAllPDF}
-            title="Exporter tous les devis de l'historique en un document PDF"
-            style={{ gap: '6px' }}
-          >
-            <i className="fas fa-file-pdf"></i> Exporter Tout (PDF)
-          </button>
           <input
             type="text"
             className="form-control"
             placeholder="Rechercher un devis..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ minWidth: '200px' }}
+            style={{ minWidth: '220px' }}
           />
           <button className="btn btn-outline-secondary" onClick={fetchData} title="Rafraîchir">
             <i className="fas fa-sync-alt"></i>
@@ -217,15 +143,7 @@ export const HistoriqueView = () => {
                             {Math.round(fenetre.prix).toLocaleString('fr-FR')} Ar
                           </td>
                           <td><small>{fenetre.date_creation}</small></td>
-                          <td className="text-center d-flex justify-content-center" style={{ gap: '5px' }}>
-                            <button
-                              className="btn btn-sm btn-danger font-weight-bold d-inline-flex align-items-center"
-                              onClick={() => handleExportFenetrePDF(fenetre)}
-                              title="Télécharger le devis en PDF"
-                              style={{ gap: '4px' }}
-                            >
-                              <i className="fas fa-file-pdf"></i> PDF
-                            </button>
+                          <td className="text-center">
                             <button
                               className="btn btn-sm btn-outline-danger"
                               onClick={() => handleDeleteFenetre(fenetre.id)}
@@ -287,15 +205,7 @@ export const HistoriqueView = () => {
                             {Math.round(porte.prix).toLocaleString('fr-FR')} Ar
                           </td>
                           <td><small>{porte.date_creation}</small></td>
-                          <td className="text-center d-flex justify-content-center" style={{ gap: '5px' }}>
-                            <button
-                              className="btn btn-sm btn-danger font-weight-bold d-inline-flex align-items-center"
-                              onClick={() => handleExportPortePDF(porte)}
-                              title="Télécharger le devis en PDF"
-                              style={{ gap: '4px' }}
-                            >
-                              <i className="fas fa-file-pdf"></i> PDF
-                            </button>
+                          <td className="text-center">
                             <button
                               className="btn btn-sm btn-outline-danger"
                               onClick={() => handleDeletePorte(porte.id)}
